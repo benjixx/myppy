@@ -15,7 +15,7 @@ the build process.
 The secret sauce is basically:
 
   * Using the Linux Standard Base SDK on Linux, to avoid linking against
-    but the most portable of symbols.
+    any but the most portable of symbols.
 
   * Setting MACOSX_DEPLOYMENT_TARGET to the lowest available version, and
     building universal binaries on OSX.

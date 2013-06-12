@@ -13,7 +13,7 @@ import subprocess
 import shutil
 from textwrap import dedent
 
-from myppy.util import md5file, do, bt, cd, relpath, tempdir, chstdin
+from myppy.util import md5file, do, bt, cd, relpath, tempdir, chstdin, which
 
 from myppy.recipes import base
 
@@ -352,9 +352,16 @@ class lib_wxwidgets_base(base.lib_wxwidgets_base,Recipe):
 
 
 class bin_lsbsdk(Recipe):
-    SOURCE_URL = "http://ftp.linuxfoundation.org/pub/lsb/bundles/released-4.1.0/sdk/lsb-sdk-4.1.5-1.ia32.tar.gz"
+    SOURCE_URL = "http://ftp.linuxfoundation.org/pub/lsb/bundles/released-4.1.0/sdk/lsb-sdk-4.1.6-2.ia32.tar.gz"
     def build(self):
-        pass
+        if not os.path.exists('/lib/ld-lsb.so.3'):
+            msg = "File '/lib/ld-lsb.so.3' does not exist.\n"
+            msg +=  "Please install LSB support packages for your system."
+            raise RuntimeError(msg)
+        if which("rpm2cpio") is None:
+            msg = "Program 'rpm2cpio' does not exist.\n"
+            msg +=  "Please install rpm2cpio for your system."
+            raise RuntimeError(msg)
     def install(self):
         updir = self._unpack()
         for nm in os.listdir(updir):
@@ -373,6 +380,23 @@ class bin_lsbsdk(Recipe):
         ioctl_header = os.path.join(self.INSTALL_PREFIX,
                                     "opt/lsb/include/sys/ioctl.h")
         self._patch_file(ioctl_header, hackily_define_TIOCSWINSZ)
+        # Check if we can actually compile something
+        with tempdir() as workdir:
+            with open(os.path.join(workdir, "test.c"), "w") as f:
+                f.write("""
+                    #include <stdio.h>
+                    int main(void) { printf("hello world"); return 0; }
+                """)
+            with cd(workdir):
+                try:
+                    self.target.do("lsbcc", "-m32", "-o", "test", "test.c")
+                    self.target.do("./test")
+                except Exception, e:
+                    msg = "Failed to compile a test executable:\n"
+                    msg += "    " + str(e) + "\n"
+                    msg += "Please make sure you can compile 32-bit "
+                    msg += "LSB applications on your system"
+                    raise RuntimeError(msg)
 
 
 class lib_sparsehash(Recipe):
