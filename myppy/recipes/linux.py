@@ -352,7 +352,7 @@ class lib_wxwidgets_base(base.lib_wxwidgets_base,Recipe):
 
 
 class bin_lsbsdk(Recipe):
-    SOURCE_URL = "http://ftp.linuxfoundation.org/pub/lsb/bundles/released-4.1.0/sdk/lsb-sdk-4.1.6-2.ia32.tar.gz"
+    SOURCE_URL = "http://ftp.linuxfoundation.org/pub/lsb/bundles/released-4.1.0/sdk/lsb-sdk-4.1.7-1.ia32.tar.gz"
     def build(self):
         if not os.path.exists('/lib/ld-lsb.so.3'):
             msg = "File '/lib/ld-lsb.so.3' does not exist.\n"

@@ -28,14 +28,14 @@ class MyppyEnv(base.MyppyEnv):
     @property
     def LDFLAGS(self):
         flags = "-m32"
-        for libdir in ("lib", "opt/lsb/lib"):
+        for libdir in ("lib", "opt/lsb/lib", "/usr/lib"):
             flags += " -L" + os.path.join(self.PREFIX,libdir)
         return flags
 
     @property
     def CFLAGS(self):
         flags = "-Os -D_GNU_SOURCE -DNDEBUG -m32"
-        for incdir in ("include", "opt/lsb/include"):
+        for incdir in ("include", "opt/lsb/include", "/usr/include"):
             flags += " -I" + os.path.join(self.PREFIX,incdir)
         return  flags
 
